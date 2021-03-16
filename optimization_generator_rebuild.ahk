@@ -5,8 +5,8 @@ return
 !+3::
 
 ;GUI****************
-
-Gui, New,,OPTIMIZATION GENERATOR
+ 
+Gui, New,,OPTIMIZATION GENERATOR -- REBUILD
 
 ;ROW 1 - DATA FROM OPT SCRIPT
 Gui, Add, Text, x5 y5, ##ITEM DATA
@@ -117,7 +117,183 @@ clipboard = %pid%
 clipwait
 return
 
+TAGS:
+    Gui, Submit, NoHide
 
+    apbool := 0
+    epbool := 0
+    gsobool := 0
+    compbool := 0
+    ambool := 0
+    asinbool := 0
+    serpbool := 0
+    loneasinbool := 0
+    notagbool := 0
+
+    aptag := "#AP"
+    eptag := "#EP"
+    gsotag := "#GSO"
+    comptag := "#COMP"
+    amtag := "#AM"
+    serptag := "#SEO"
+
+    tagstring := ""
+
+  ;base price vars
+    price := 11.99
+    
+    floorPrice := 11.99
+    realFloor := (floorPrice - assumedShip - (marketCutFactor * floorPrice))
+
+    setAma := asinLow
+    if (setAma != currPrice){
+      setAma = setAma - .01
+    }
+
+    setEbay := ebayTarget
+    
+    shipPrice = 5
+    if (asinShip > 0){
+      shipPrice := asinShip + .01
+    }
+
+  ;decision vars
+    realAma = asinLow - (asinLow * marketCutFactor)
+    realEbay = (ebayTarget - assumedShip - (ebayTarget * marketCutFactor))
+
+    marketCutFactor := .15
+    assumedShip := 4
+
+    marketDiff := Abs(realAma - realEbay) ;
+    marketAvg := (realAma + realEbay) / 2 ;
+    acceptDiff := .15 * marketAvg ;
+
+    asinMidRank := 25000
+    asinHighRank := 10000
+
+    cpc := googCost / googConversions
+
+
+  ;setting bools for decision logic
+    if (InStr(asin, "B")){
+      asinbool := 1
+    }
+    if (serp is number){
+        serpbool := 1
+    }
+    if (qoh > 0 && asinSellers = 1){
+        loneasinbool := 1
+    }
+    if ((googConversions = 0 
+        && googCost > (price * 1.25)) 
+            || (googConversions > 0 
+            && cpc > (price * .17)) 
+                || price < 7.99) {
+    gsobool:=1
+    }
+    if (InStr(sku, "_NEW") 
+        && asinbool 
+        && !apbool) {
+    compbool:=1
+    }
+    
+  ;NEW PRICING RULES
+    if (asinbool 
+        && !loneasinbool 
+        && marketDiff <= acceptDiff 
+        && asinRanking > asinHighRank 
+        && realAma > realFloor){
+      price := setAma
+      ambool := 1
+    }
+    if ((asinbool 
+        && loneasinbool 
+        && asinRanking < asinHighRank) 
+            || (asinbool 
+            && realAma > realEbay 
+            && marketDiff > acceptDiff) ){
+      price := setAma
+      epbool := 1
+    }
+    if (asinbool 
+        && realEbay > realAma 
+        && asinRanking > asinMidRank ){
+      price := setEbay
+      apbool := 1
+    } 
+    if (!asinbool 
+        && !apbool 
+        && !epbool 
+        && !ambool 
+        && setEbay > floorPrice){
+      price := setEbay
+      notagbool := 1
+    } 
+    if (notagbool 
+        && setEbay < floorPrice){
+      price := floorPrice
+    }
+    
+/*    
+;TRASH?
+;asinLowPlus := asinTotal + 5
+;TRASH?
+;TRASH -replace with realAma, similar realEbay
+;possible deletes
+;amaPrice := asinTotal - shipPrice
+;TRASH?
+;TRASH -- CHANGING
+    ;pricing and tag condition setting
+    if (asinbool && marketDiff <= acceptDiff && realAma >= realFloor && asinRanking > asinMidRank) {
+     price := setAma
+     ambool := 1  
+    } else if ((asinbool && realAma > realEbay && marketDiff >= acceptDiff && asinRanking < asinMidRank) || (asinbool && && realEbay < realAma && realAma < floorPrice && realAma > 1.5 && asinRanking < asinHighRank) ){
+      price := setAma
+      epbool :=1
+    } else {
+      ;if ((asinbool && amaPrice < ebayPrice && marketDiff >= acceptDiff) || (asinRanking < asinMidRank && asinbool && amaPrice < ebayPrice && marketDiff >= acceptDiff))
+          apbool :=1
+          price := setEbay  
+        if (price < floorPrice){
+        price := floorPrice
+        }
+    }
+;TRASH
+*/
+
+    ;tagging
+      if (serpbool) {
+      serptag = %serptag%%serp%
+      tagstring = %tagstring%%serptag%
+      }
+      if (gsobool){
+        tagstring=%tagstring%%gsotag%
+      }
+      if (compbool){
+      tagstring=%tagstring%%comptag%
+      }
+      if (apbool) {
+        tagstring=%tagstring%%aptag%
+      }
+      if (epbool){
+        tagstring=%tagstring%%eptag%
+      }
+      if (ambool){
+        tagstring=%tagstring%%amtag%
+      }
+
+
+    ;final tagstring
+      GuiControl,,tags, %tagstring%
+      clipboard = %tagstring%
+      clipwait
+      Gosub, SUGG_PRICE
+      
+    return
+
+;*****OLD TAGS LOGIC BELOW
+;
+/*
 TAGS:
     Gui, Submit, NoHide
 
@@ -239,6 +415,7 @@ TAGS:
         Gosub, SUGG_PRICE
         
       return
+*/
 
 TAG_COPY:
   Gui, Submit, NoHide

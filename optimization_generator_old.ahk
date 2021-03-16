@@ -170,7 +170,7 @@ clipboard := ""
 
 ;GUI****************
 
-Gui, New,,OPTIMIZATION GENERATOR
+Gui, New,,OPTIMIZATION GENERATOR -- OLD
 
 ;ROW 1 - DATA FROM OPT SCRIPT
 Gui, Add, Text, x5 y5, ##ITEM DATA
@@ -246,7 +246,7 @@ Gui, Add, Edit, w50 vaddNever gADD_NEVER Disabled
 
 Gui, Add, Button, x170 y560 w200 h60 Default gGENERATE, GENERATE
 
-Gui, Show, x0 y0 w890 h230
+Gui, Show, x40 y60 w890 h230
 return
 
         ;LABELS****************
