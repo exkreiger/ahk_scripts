@@ -11,7 +11,7 @@ return
 SendInput `;TRASH
 return
 
-!z::
+!::
 Reload
 return
 
@@ -175,6 +175,91 @@ Gui, New,,OPTIMIZATION GENERATOR -- OLD
 ;ROW 1 - DATA FROM OPT SCRIPT
 Gui, Add, Text, x5 y5, ##ITEM DATA
 Gui, Add, Text,x5 y25, SKU
+Gui, Add, Button, x85 y25  w150 vskuGui gSKUGUI, %sku% 
+
+Gui, Add, Text,x5 y60, MPN
+Gui, Add, Button, x85 y60 w150 vmpnGui gMPNGUI, %mpn%
+
+Gui, Add, Text,x5 y95, PRODUCT_ID
+Gui, Add, Button, x85 y95 w150 vpidGui gPIDGUI, %pid%
+
+
+
+
+;ROW 2 - ODAT / serp
+Gui, Add, Text, x240 y5, ##ODAT
+Gui, Add, Text, x240 y25, Number In Stock
+Gui, Add, Edit, x240 y40 vqoh gQOH
+
+Gui, Add, Text, x240 y65, Number Processed
+Gui, Add, Edit, x240 y80 vprocCount gPROC_COUNT
+
+Gui, Add, Text, x240 y105, Current Price
+Gui, Add, Edit, x240 y125 vcurrPrice gCURR_PRICE
+
+Gui, Add, Text, x240 y150, ##SERP
+Gui, Add, Text, x240 y165, Serp Ranking
+Gui, Add, Edit, x240 y180 vserp gSERP
+
+;Gui, Add, Button, x20 y140 w200 h60 Default gGENERATE, GENERATE
+
+;ROW3 - amazon
+Gui, Add, Text, x365 y5, ##AMAZON
+Gui, Add, Text, x365 y25, ASIN
+Gui, Add, Edit, x365 y40 vasin gASIN
+
+Gui, Add, Text, x365 y65, ASIN Ranking
+Gui, Add, Edit, x365 y80 vasinRanking gASIN_RANKING
+
+Gui, Add, Text, x365 y105, Lowest Listing Price
+Gui, Add, Edit, x365 y120 vasinLow gASIN_LOW
+
+Gui, Add, Text, x365 y145, Lowest Listing shipping
+Gui, Add, Edit, x365 y160 vasinShip gASIN_SHIP
+
+Gui, Add, Text, x365 y185, # Current Sellers
+Gui, Add, Edit, x365 y200 vasinSellers gASIN_SELLERS
+
+;ROW4 -shipstation/ebay/google
+Gui, Add, Text,x490 y5, ##SHIPSTATION
+Gui, Add, Text, x490 y25, Quantity Sold
+Gui, Add, Edit, x490 y40 vqSold gQ_SOLD
+
+Gui, Add, Text, x490 y70 ,##EBAY
+Gui, Add, Text,x490 y85 , Ebay Target Price
+Gui, Add, Edit, x490 y100 vebayTarget gEBAY_TARGET
+
+Gui, Add, Text, x490 y130 ,##GOOGLE ADS
+Gui, Add, Text, x490 y145, Cost
+Gui, Add, Edit, x490 y160 vgoogCost gGOOG_COST
+
+Gui, Add, Text,x490 y185, Conversions
+Gui, Add, Edit, x490 y200 vgoogConversions gGOOG_CONVERSIONS
+
+Gui, Add, Text,x630 y5, ####################################
+Gui, Add, Text,x675 y+10, //////GENERATED DATA\\\\\\
+
+Gui, Add, Text, x630 y+20, TAGS 
+Gui, Add, Edit, w200 vtags gTAGS Disabled
+Gui, Add, Button, x+10 w20 vtagCopy gTAG_COPY, COPY
+
+Gui, Add, Text, x630 y120, SUGGESTED PRICE
+Gui, Add, Edit, w200 vsuggPrice gSUGG_PRICE Disabled
+Gui, Add, Button, x+10 w20 vpriceCopy gPRICE_COPY, COPY
+
+Gui, Add, Text, x630 y+20, ADD // NEVER
+Gui, Add, Edit, w50 vaddNever gADD_NEVER Disabled
+
+Gui, Add, Button, x20 y140 w200 h60 Default gGENERATE, GENERATE
+
+Gui, Show, x40 y60 w890 h230
+return
+
+
+/*
+;ROW 1 - DATA FROM OPT SCRIPT
+Gui, Add, Text, x5 y5, ##ITEM DATA
+Gui, Add, Text,x5 y25, SKU
 Gui, Add, Button, x85 y25  w150 vskuGui gskuGui, %sku% 
 
 Gui, Add, Text,x5 y115, MPN
@@ -248,6 +333,7 @@ Gui, Add, Button, x170 y560 w200 h60 Default gGENERATE, GENERATE
 
 Gui, Show, x40 y60 w890 h230
 return
+*/
 
         ;LABELS****************
 
@@ -340,7 +426,7 @@ TAGS:
     if (InStr(asin, "B")){
       asinbool := 1
     }
-    if serp is digit
+    if serp is Integer
       serpbool := 1
     if (qoh > 0 && asinSellers = 1){
         loneasinbool := 1
@@ -595,6 +681,10 @@ ADD_NEVER:
 return
 
 ;FIELDS**********************
+ASIN_SELLERS:
+Gui, Submit, NoHide
+return
+
 SERP:
 Gui, Submit, NoHide
 return
