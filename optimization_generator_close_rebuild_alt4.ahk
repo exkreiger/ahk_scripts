@@ -289,60 +289,6 @@ return
 
 
 ;	BUTTONS ***************
-
-GENERATE:
-Gui, Submit, NoHide
-
-;creating generator object
-generator := {}
-generator.asinSellers := asinSellers
-generator.serp := serp
-generator.asinShip := asinShip
-generator.qoh := qoh
-generator.procCount := procCount
-generator.currPrice := currPrice
-generator.qSold := qSold
-generator.asin := asin
-generator.asinRanking := asinRanking
-generator.googCost := googCost
-generator.googConversions := googConversions
-;new stuff for final
-generator.amaSetPrice := asinLow
-generator.ebaySetPrice := ebayTarget
-generator.floorPrice := 11.99
-generator.price := generator.floorPrice
-generator.epbool := 0
-generator.gsobool := 0
-generator.compbool := 0
-generator.ambool := 0
-generator.apbool := 0
-generator.asinbool := 0
-generator.serpbool := 0
-generator.loneasinbool := 0
-generator.aptag := "#AP"
-generator.eptag := "#EP"
-generator.gsotag := "#GSO"
-generator.comptag := "#COMP"
-generator.amtag := "#AM"
-generator.serptag := "#SEO"
-generator.marketCutFactor := .15
-generator.regAssumeShip := 4
-generator.amaAssumeShip := 5
-generator.asinLowRank := 40000
-generator.asinMidRank := 25000
-generator.asinHighRank := 10000
-;math fields
-generator.realFloor := generator.floorPrice - generator.regAssumeShip - (generator.floorPrice*generator.marketCutFactor)
-generator.realAma := generator.amaSetPrice - (generator.amaSetPrice*generator.marketCutFactor)
-generator.realEbay := generator.ebaySetPrice - generator.regAssumeShip - (generator.ebaySetPrice*generator.marketCutFactor)
-generator.marketDiff := Abs(generator.realAma - generator.realEbay)
-generator.marketAvg := (generator.realAma + generator.realEbay)/2
-generator.acceptDiff := .15 * generator.marketAvg
-generator.cpc := Format("{:.2f}", (generator.googCost / generator.googConversions))
-
-Gosub, TAGS
-return
-
 skuGui:
 Gui, Submit, NoHide
 clipboard = %sku%
@@ -360,6 +306,131 @@ Gui, Submit, NoHide
 clipboard = %pid%
 clipwait
 return
+
+
+GENERATE:
+Gui, Submit, NoHide
+
+;creating generator object
+generator := {}
+generator.asinSellers := asinSellers
+generator.serp := serp
+generator.asinShip := asinShip
+generator.qoh := qoh
+generator.procCount := procCount
+generator.currPrice := currPrice
+generator.qSold := qSold
+generator.asin := asin
+generator.asinRanking := asinRanking
+generator.googCost := googCost
+generator.googConversions := googConversions
+generator.sku := sku
+generator.mpn := mpn
+generator.pid := pid
+
+;new stuff for generation
+generator.amaSetPrice := asinLow
+generator.ebaySetPrice := ebayTarget
+generator.floorPrice := 11.99
+generator.priceSuggestion := generator.floorPrice
+generator.epbool := 0
+generator.gsobool := 0
+generator.compbool := 0
+generator.ambool := 0
+generator.apbool := 0
+generator.asinbool := 0
+generator.serpbool := 0
+generator.loneasinbool := 0
+generator.aptag := "#AP"
+generator.eptag := "#EP"
+generator.gsotag := "#GSO"
+generator.comptag := "#COMP"
+generator.amtag := "#AM"
+generator.serptag := "#SEO"
+generator.tagstring := ""
+generator.marketCutFactor := .15
+generator.regAssumeShip := 4
+generator.amaAssumeShip := 5
+generator.asinLowRank := 40000
+generator.asinMidRank := 25000
+generator.asinHighRank := 10000
+
+;math fields
+generator.realFloor := generator.floorPrice - generator.regAssumeShip - (generator.floorPrice*generator.marketCutFactor)
+generator.realAma := generator.amaSetPrice - (generator.amaSetPrice*generator.marketCutFactor)
+generator.realEbay := generator.ebaySetPrice - generator.regAssumeShip - (generator.ebaySetPrice*generator.marketCutFactor)
+generator.marketDiff := Abs(generator.realAma - generator.realEbay)
+generator.marketAvg := (generator.realAma + generator.realEbay)/2
+generator.acceptDiff := .15 * generator.marketAvg
+generator.cpc := Format("{:.2f}", (generator.googCost / generator.googConversions))
+
+;changes to properties
+if (generator.amaSetPrice != generator.currPrice){
+  generator.amaSetPrice := generator.amaSetPrice - .01
+}
+
+if (generator.asinShip > 0){
+  generator.amaAssumeShip := generator.amaAssumeShip + .01
+}
+
+;setting bools for decision logic
+if (InStr(generator.asin, "B")){
+  generator.asinbool := 1
+}
+if (generator.serp > 0){
+  generator.serpbool := 1
+}
+if (generator.qoh > 0 
+    && generator.asinSellers = 1){
+  generator.loneasinbool := 1
+}
+
+if (InStr(generator.sku, "_NEW") 
+    && generator.asinbool 
+    && !generator.apbool) {
+  generator.compbool:=1
+}
+
+ ;NEW PRICING RULES
+    if (generator.asinbool && !generator.loneasinbool 
+        && generator.marketDiff <= generator.acceptDiff 
+        && generator.asinRanking > generator.asinHighRank 
+        && generator.amaSetPrice > generator.realFloor){
+      generator.price := generator.amaSetPrice
+      generator.ambool := 1
+    } else if ((generator.asinbool 
+              && generator.loneasinbool 
+              && generator.asinRanking < generator.asinHighRank) 
+                || (generator.asinbool 
+                  && generator.realAma > generator.realEbay 
+                  && generator.marketDiff > generator.acceptDiff) ){
+      generator.priceSuggestion := generator.amaSetPrice
+      generator.epbool := 1
+    }else if (generator.asinbool 
+              && generator.realEbay > generator.realAma 
+              && generator.asinRanking > generator.asinMidRank){
+      generator.priceSuggestion := generator.ebaySetPrice
+      generator.apbool := 1
+    } else if ((!generator.asinbool)){
+      generator.priceSuggestion := generator.ebaySetPrice
+      generator.apbool := 0
+      generator.epbool := 0
+      generator.ambool := 0
+    }
+
+;set gso tag after price has been determined
+if ((generator.googConversions = 0 
+&& generator.googCost > (generator.priceSuggestion * 1.25)) 
+  || (generator.googConversions > 0 
+    && generator.cpc > (generator.priceSuggestion * .17)) 
+  || generator.priceSuggestion < 7.99) {
+generator.gsobool:=1
+}
+
+Gosub, TAGS
+return
+
+
 
 TAGS:
     Gui, Submit, NoHide
@@ -391,17 +462,12 @@ TAGS:
 
     setAma := asinLow
 */
-    if (setAma != currPrice){
-      setAma = setAma - .01
-    }
+    
 /*
     setEbay := ebayTarget
     
     shipPrice = 5
 */
-    if (asinShip > 0){
-      shipPrice := asinShip + .01
-    }
 
 /*
   ;decision vars
@@ -414,112 +480,74 @@ TAGS:
     marketDiff := Abs(realAma - realEbay) ;
     marketAvg := (realAma + realEbay) / 2 ;
     acceptDiff := .15 * marketAvg ;
-*/
     asinMidRank := 25000
     asinHighRank := 10000
 
     cpc := googCost / googConversions
+*/
 
 
-  ;setting bools for decision logic
-    if (InStr(asin, "B")){
-      asinbool := 1
-    }
-    if (serp > 0){
-      serpbool := 1
-    }
-    if (qoh > 0 && asinSellers = 1){
-        loneasinbool := 1
-    }
-    if ((googConversions = 0 && googCost > (price * 1.25)) 
-        || (googConversions > 0 && cpc > (price * .17)) 
-        || price < 7.99) {
-    gsobool:=1
-    }
-    if (InStr(sku, "_NEW") && asinbool && !apbool) {
-    compbool:=1
-    }
+  
     
-  ;NEW PRICING RULES
-    if (asinbool && !loneasinbool 
-        && marketDiff <= acceptDiff 
-        && asinRanking > asinHighRank 
-        && realAma > realFloor){
-      price := setAma
-      ambool := 1
-    } else if ((asinbool 
-              && loneasinbool 
-              && asinRanking < asinHighRank) 
-                || (asinbool 
-                && realAma > realEbay 
-                && marketDiff > acceptDiff) ){
-      price := setAma
-      epbool := 1
-    }else if (asinbool 
-              && realEbay > realAma 
-              && asinRanking > asinMidRank){
-      price := setEbay
-      apbool := 1
-    } else if ((!asinbool)){
-      price := setEbay
-      apbool := 0
-      epbool := 0
-      ambool := 0
-    }
+ 
 
     ;tagging
-      if (serpbool) {
-      serptag = %serptag%%serp%
-      tagstring = %tagstring%%serptag%
+      if (generator.serpbool) {
+      generator.serptag := generator.serptag . generator.serp
+      generator.tagstring := generator.tagstring . generator.serptag
       }
-      if (gsobool){
-        tagstring=%tagstring%%gsotag%
+      if (generator.gsobool){
+        generator.tagstring := generator.tagstring . generator.gsotag
       }
-      if (compbool){
-      tagstring=%tagstring%%comptag%
+      if (generator.compbool){
+      generator.tagstring := generator.tagstring . generator.comptag
       }
-      if (apbool) {
-        tagstring=%tagstring%%aptag%
+      if (generator.apbool) {
+        generator.tagstring := generator.tagstring . generator.aptag
       }
-      if (epbool){
-        tagstring=%tagstring%%eptag%
+      if (generator.epbool){
+        generator.tagstring := generator.tagstring . generator.eptag
       }
-      if (ambool){
-        tagstring=%tagstring%%amtag%
+      if (generator.ambool){
+        generator.tagstring := generator.tagstring . generator.amtag
       }
 
 
     ;final tagstring
-      GuiControl,,tags, %tagstring%
-      clipboard = %tagstring%
-      clipwait
+      tag := generator.tagstring
+      GuiControl,,tags, %tag%
+      ;clipboard := generator.tagstring
+      ;clipwait
       Gosub, SUGG_PRICE
       
     return
 
 TAG_COPY:
   Gui, Submit, NoHide
-  clipboard = %tagstring%
+  clipboard := generator.tagstring
+  clipwait
 return
 
 SUGG_PRICE:
   Gui, Submit, NoHide
-  price := Format("{:.2f}", price)
+  price := Format("{:.2f}", generator.priceSuggestion)
   GuiControl,, suggPrice, %price%
-  clipboard = %price%
+  clipboard := price
   clipwait
   Gosub, ADD_NEVER
 return
 
 PRICE_COPY:
   Gui, Submit, NoHide
-  clipboard = %price%
+  clipboard := generator.priceSuggestion
 return
 
 ADD_NEVER:
   Gui, Submit, NoHide
 
-  if ((qoh > qSold * 2) || (qSold = 0 && qoh > 2) ){
+  if ((generator.qoh > generator.qSold * 2) 
+      || (generator.qSold = 0 
+        && generator.qoh > 2) ){
     GuiControl,, addNever, NEVER
   } else {
     GuiControl,, addNever, ADD
@@ -527,6 +555,7 @@ ADD_NEVER:
 
 return
 
+/*moved to top
 ;FIELDS**********************
 ASIN_SELLERS:
 Gui, Submit, NoHide
@@ -579,6 +608,7 @@ return
 GOOG_CONVERSIONS:
 Gui, Submit, NoHide
 return
+*/
 
 ;end of generator gui
 return
