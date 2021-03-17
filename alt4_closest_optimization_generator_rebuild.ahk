@@ -364,6 +364,10 @@ generator.marketAvg := (generator.realAma + generator.realEbay)/2
 generator.acceptDiff := .15 * generator.marketAvg
 generator.cpc := Format("{:.2f}", (generator.googCost / generator.googConversions))
 
+;printing vars
+tag := ""
+priceSuggestion := 0.00
+
 ;changes to properties
 if (generator.amaSetPrice != generator.currPrice){
   generator.amaSetPrice := generator.amaSetPrice - .01
@@ -396,7 +400,8 @@ if (InStr(generator.sku, "_NEW")
         && generator.marketDiff <= generator.acceptDiff 
         && generator.asinRanking > generator.asinHighRank 
         && generator.amaSetPrice > generator.realFloor){
-      generator.price := generator.amaSetPrice
+      ;generator.priceSuggestion := generator.amaSetPrice
+      priceSuggestion := generator.amaSetPrice
       generator.ambool := 1
     } else if ((generator.asinbool 
               && generator.loneasinbool 
@@ -404,15 +409,18 @@ if (InStr(generator.sku, "_NEW")
                 || (generator.asinbool 
                   && generator.realAma > generator.realEbay 
                   && generator.marketDiff > generator.acceptDiff) ){
-      generator.priceSuggestion := generator.amaSetPrice
+      ;generator.priceSuggestion := generator.amaSetPrice
+      priceSuggestion := generator.amaSetPrice
       generator.epbool := 1
     }else if (generator.asinbool 
               && generator.realEbay > generator.realAma 
               && generator.asinRanking > generator.asinMidRank){
-      generator.priceSuggestion := generator.ebaySetPrice
+      ;generator.priceSuggestion := generator.ebaySetPrice
+      priceSuggestion := generator.ebaySetPrice
       generator.apbool := 1
     } else if ((!generator.asinbool)){
-      generator.priceSuggestion := generator.ebaySetPrice
+      ;generator.priceSuggestion := generator.ebaySetPrice
+      priceSuggestion := generator.ebaySetPrice
       generator.apbool := 0
       generator.epbool := 0
       generator.ambool := 0
@@ -420,10 +428,10 @@ if (InStr(generator.sku, "_NEW")
 
 ;set gso tag after price has been determined
 if ((generator.googConversions = 0 
-&& generator.googCost > (generator.priceSuggestion * 1.25)) 
-  || (generator.googConversions > 0 
-    && generator.cpc > (generator.priceSuggestion * .17)) 
-  || generator.priceSuggestion < 7.99) {
+      && generator.googCost > (generator.priceSuggestion * 1.25)) 
+        || (generator.googConversions > 0 
+          && generator.cpc > (generator.priceSuggestion * .17)) 
+        || priceSuggestion < 7.99) {
 generator.gsobool:=1
 }
 
@@ -495,21 +503,27 @@ TAGS:
       if (generator.serpbool) {
       generator.serptag := generator.serptag . generator.serp
       generator.tagstring := generator.tagstring . generator.serptag
+      tag := generator.tagstring
       }
       if (generator.gsobool){
         generator.tagstring := generator.tagstring . generator.gsotag
+        tag := generator.tagstring
       }
       if (generator.compbool){
       generator.tagstring := generator.tagstring . generator.comptag
+      tag := generator.tagstring
       }
       if (generator.apbool) {
         generator.tagstring := generator.tagstring . generator.aptag
+        tag := generator.tagstring
       }
       if (generator.epbool){
         generator.tagstring := generator.tagstring . generator.eptag
+        tag := generator.tagstring
       }
       if (generator.ambool){
         generator.tagstring := generator.tagstring . generator.amtag
+        tag := generator.tagstring
       }
 
 
@@ -518,13 +532,14 @@ TAGS:
       GuiControl,,tags, %tag%
       ;clipboard := generator.tagstring
       ;clipwait
-      Gosub, SUGG_PRICE
+      Gosub, SUGG_PRICE 
       
     return
 
 TAG_COPY:
   Gui, Submit, NoHide
-  clipboard := generator.tagstring
+  tag := generator.tagstring
+  clipboard := tag
   clipwait
 return
 
