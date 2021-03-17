@@ -1,17 +1,7 @@
-;CoordMode, Mouse, Screen
+CoordMode, Mouse, Screen
 
 ;UTILITIES
-;temp hk for refactoring variables and logic, marking things to keep
-!q::
-SendInput `;OKTG
-return
-
-;temp hk for refactoriing -- things to probably trash
-!w::
-SendInput `;TRASH
-return
-
-!x::
+!z::
 Reload
 return
 
@@ -22,10 +12,6 @@ return
   ToolTip,X%X%`,Y%Y%
   clipboard = %X%, %Y%, 0
   clipwait
-  return
-
-#1::
-  Edit
   return
 
 ;OPTIMIZATION HOTKEY
@@ -75,7 +61,7 @@ clipboard := ""
    Sleep 100
    Click
    Sleep 100
-   Send {Home}
+   Send {End}
    Sleep 250
    Click 2
    Send %sku%
@@ -139,15 +125,11 @@ clipboard := ""
    MouseMove, startx+191, starty+142, 0
    clipboard := Trim(sku)
 
-;return
+return
 
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
 
-!+4::
-
-pid := "testpid"
-sku := "xtestsku_NEW"
-mpn := 69420
+;!+1::
 
 ;GUI****************
 
@@ -321,7 +303,7 @@ Gui, Submit, NoHide
     amaSetPrice := asinLow
     ebaySetPrice := ebayTarget
     floorPrice := 11.99
-    priceSuggestion := floorPrice
+    priceSuggestion := 11.99
     ;bools for tags and states
     epbool := 0
     gsobool := 0
@@ -408,13 +390,14 @@ Gui, Submit, NoHide
       apbool := 1
     } 
     ;NO TAGS
-    else if ((!asinbool)){
+    else if ((!asinbool && ebaySetPrice)){
       priceSuggestion := ebaySetPrice
     } 
     ;NO TAGS AND LOW PRICE
-    else if (ebaySetPrice < floorPrice) {
-      priceSuggestion := floorPrice
-    } else {
+    else if (!apbool
+            && !epbool
+            && !ambool
+            && ebaySetPrice < floorPrice) {
       priceSuggestion := floorPrice
     }
 
