@@ -332,7 +332,8 @@ generator.pid := pid
 generator.amaSetPrice := asinLow
 generator.ebaySetPrice := ebayTarget
 generator.floorPrice := 11.99
-generator.priceSuggestion := generator.floorPrice
+  floorPrice := generator.floorPrice
+generator.priceSuggestion := floorPrice
 generator.epbool := 0
 generator.gsobool := 0
 generator.compbool := 0
@@ -356,44 +357,62 @@ generator.asinMidRank := 25000
 generator.asinHighRank := 10000
 
 ;math fields
-generator.realFloor := generator.floorPrice - generator.regAssumeShip - (generator.floorPrice*generator.marketCutFactor)
-generator.realAma := generator.amaSetPrice - (generator.amaSetPrice*generator.marketCutFactor)
-generator.realEbay := generator.ebaySetPrice - generator.regAssumeShip - (generator.ebaySetPrice*generator.marketCutFactor)
-generator.marketDiff := Abs(generator.realAma - generator.realEbay)
-generator.marketAvg := (generator.realAma + generator.realEbay)/2
-generator.acceptDiff := .15 * generator.marketAvg
-generator.cpc := Format("{:.2f}", (generator.googCost / generator.googConversions))
+  ;printing vars
+  tagstring := ""
+  priceSuggestion := 0.00
+  ;re-setting outer vars that reference obj.props
+  regAssumeShip := generator.regAssumeShip
+  marketCutFactor := generator.marketCutFactor
+  amaSetPrice := generator.amaSetPrice
+  ebaySetPrice := generator.ebaySetPrice
 
-;printing vars
-tag := ""
-priceSuggestion := 0.00
+;doing math on outer vars, piping back to object
+generator.realFloor := floorPrice - regAssumeShip - (floorPrice*marketCutFactor)
+generator.realAma := amaSetPrice - (amaSetPrice*marketCutFactor)
+  ;re-setting outer vars that reference obj.props
+  realAma := generator.realAma
+generator.realEbay := ebaySetPrice - regAssumeShip - (ebaySetPrice*marketCutFactor)
+  ;""
+  realEbay := generator.realEbay
+generator.marketDiff := Abs(realAma - realEbay)
+  ;""
+  marketDiff := generator.marketDiff
+generator.marketAvg := (realAma + realEbay)/2
+  ;""
+  marketAvg := generator.marketAvg
+generator.acceptDiff := .15 * marketAvg
+  ;""
+  acceptDiff := generator.acceptDiff
+generator.cpc := Format("{:.2f}", (googCost / googConversions))
+  ;""
+  cpc := generator.cpc
 
 ;changes to properties
-if (generator.amaSetPrice != generator.currPrice){
-  generator.amaSetPrice := generator.amaSetPrice - .01
-}
+    if (amaSetPrice != currPrice){
+      generator.amaSetPrice := amaSetPrice - .01
+    }
 
-if (generator.asinShip > 0){
-  generator.amaAssumeShip := generator.amaAssumeShip + .01
-}
+    if (asinShip > 0){
+      generator.amaAssumeShip := asinShip + .01
+    }
 
-;setting bools for decision logic
-if (InStr(generator.asin, "B")){
-  generator.asinbool := 1
-}
-if (generator.serp > 0){
-  generator.serpbool := 1
-}
-if (generator.qoh > 0 
-    && generator.asinSellers = 1){
-  generator.loneasinbool := 1
-}
+    ;setting bools for decision logic
+    if (InStr(asin, "B")){
+      generator.asinbool := 1
+    }
+    if (serp > 0){
+      generator.serpbool := 1
+    }
+    if (qoh > 0 
+        && asinSellers = 1){
+      generator.loneasinbool := 1
+    }
 
-if (InStr(generator.sku, "_NEW") 
-    && generator.asinbool 
-    && !generator.apbool) {
-  generator.compbool:=1
-}
+    if (InStr(sku, "_NEW") 
+        && generator.asinbool 
+        && !generator.apbool) {
+      generator.compbool:=1
+    }
 
  ;NEW PRICING RULES
     if (generator.asinbool && !generator.loneasinbool 
@@ -426,12 +445,15 @@ if (InStr(generator.sku, "_NEW")
       generator.ambool := 0
     }
 
+    ;filing the priceSuggestion back
+    generator.priceSuggestion := priceSuggestion
+
 ;set gso tag after price has been determined
 if ((generator.googConversions = 0 
       && generator.googCost > (generator.priceSuggestion * 1.25)) 
         || (generator.googConversions > 0 
-          && generator.cpc > (generator.priceSuggestion * .17)) 
-        || priceSuggestion < 7.99) {
+          && cpc > (generator.priceSuggestion * .17)) 
+        || generator.priceSuggestion < 7.99) {
 generator.gsobool:=1
 }
 

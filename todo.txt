@@ -1,0 +1,1 @@
+1. break out "universal" work scripts [] i.e. odat maneuvers and saved text snippets ] into its own ahk file
