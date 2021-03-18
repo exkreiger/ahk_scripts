@@ -61,7 +61,7 @@ clipboard := ""
    Sleep 100
    Click
    Sleep 100
-   Send {End}
+   Send {Home}
    Sleep 250
    Click 2
    Send %sku%
@@ -125,15 +125,13 @@ clipboard := ""
    MouseMove, startx+191, starty+142, 0
    clipboard := Trim(sku)
 
-return
+;return
 
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
-
-;!+1::
-
+;!+2::
 ;GUI****************
 
-Gui, New,,OPTIMIZATION GENERATOR -- old 1
+Gui, New,,OPTIMIZATION GENERATOR
 
 ;ROW 1 - DATA FROM OPT SCRIPT
 Gui, Add, Text, x5 y5, ##ITEM DATA
@@ -216,7 +214,13 @@ Gui, Add, Edit, w50 vaddNever gADD_NEVER Disabled
 Gui, Add, Button, x20 y140 w200 h60 Default gGENERATE, GENERATE
 
 Gui, Show, x40 y60 w890 h230
+
+Send !1
+!+1::
+  WinSet, Topmost, on, OPTIMIZATION GENERATOR
+
 return
+
 
 ;LABELS****************
 
@@ -275,6 +279,10 @@ return
 
 
   ;BUTTONS ***************
+GuiClose:
+reload
+return
+
 skuGui:
 Gui, Submit, NoHide
 clipboard = %sku%
