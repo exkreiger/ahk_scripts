@@ -227,18 +227,18 @@ clipboard := ""
 
 ;***DO NOT EDIT BELOW THIS LINE***
 ;toggle comment below for lone gui testing
-return
+;return
 ;******************************************
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
 
 ;toggle comment below for lone gui testing 
-!+1::
+;!+1::
 ;GUI****************
-/*
+/*testing vars
 clipasin := "testasinb"
-*/
 clipprice := 12.99
 cliptags := "#AP#GSO#COMP#OPT1#SEO99#A30D"
+*/
 
 Gui, New,,OPTIMIZATION GENERATOR
 
