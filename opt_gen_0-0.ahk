@@ -125,9 +125,12 @@ clipboard := ""
    MouseMove, startx+191, starty+142, 0
    clipboard := Trim(sku)
 
+;toggle below comment for lone gui testing
 ;return
 
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
+
+;toggle below comment for lone gui testing 
 ;!+2::
 ;GUI****************
 
@@ -311,7 +314,7 @@ Gui, Submit, NoHide
     amaSetPrice := asinLow
     ebaySetPrice := ebayTarget
     floorPrice := 11.99
-    priceSuggestion := 11.99
+    priceSuggestion := floorPrice
     ;bools for tags and states
     epbool := 0
     gsobool := 0
@@ -333,7 +336,8 @@ Gui, Submit, NoHide
     marketCutFactor := .15
     regAssumeShip := 4
     ;amaAssumeShip
-        if (asinShip > 0){
+        if (asinShip > 0
+            && amaSetPrice){
           amaAssumeShip := asinShip + .01
           amaSetPrice := amaSetPrice - .01
         } else {

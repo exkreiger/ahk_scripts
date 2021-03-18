@@ -3,4 +3,4 @@
 0.5 have opt script grab tags, current price, asin/upc
 
 
-1. break out "universal" work scripts [] i.e. odat maneuvers and saved text snippets ] into its own ahk file
+1. break out "universal" work scripts [ i.e. odat maneuvers and saved text snippets ] into its own ahk file
