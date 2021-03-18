@@ -47,7 +47,7 @@ return
 ;   Make sure to write "done" next to each #CHANGE tag, and you should be done setting up the movement of the script for your screen in no time
 ;     just double check that the tags are all done, then test it out
 ;
-;#running the script
+; ---#running the script
 ;Hover underneath the sku of the item you are optimizing    
 ;Click to select the sku, when it is blue and selected you can run the script
 ;The main script will run with ctrl + alt + A
@@ -224,19 +224,21 @@ clipboard := ""
    Sleep 150
    Click
 
+
 ;***DO NOT EDIT BELOW THIS LINE***
 ;toggle comment below for lone gui testing
-;return
+return
 ;******************************************
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
 
 ;toggle comment below for lone gui testing 
-;!+2::
+!+1::
 ;GUI****************
+/*
 clipasin := "testasinb"
-cliptags := "[RTI-999] B199-1 #AP#GSO#EP#COMP#OPT1#SEO99#A30D"
+*/
 clipprice := 12.99
-
+cliptags := "#AP#GSO#COMP#OPT1#SEO99#A30D"
 
 Gui, New,,OPTIMIZATION GENERATOR
 
@@ -322,8 +324,8 @@ Gui, Add, Edit, w50 vaddNever gADD_NEVER Disabled
 
 Gui, Show, x40 y60 w890 h230
 
-Send !1
-!+1::
+Send !+^9
+!+^9::
   WinSet, Topmost, on, OPTIMIZATION GENERATOR
 
 return
@@ -531,7 +533,76 @@ Gui, Submit, NoHide
           || priceSuggestion < 7.99) {
     gsobool:=1
   }
+
+
+;add some logic to fix the old string and paste it to new string
+;ap, ep, gso, am, seo, comp
+oldtags := cliptags
+  if (InStr(cliptags, "#GSO") && gsobool){
+    oldtags := StrReplace(oldtags, "#GSO", "")
+  } else if (InStr(cliptags, "#GSO") && !gsobool){
+    oldtags := StrReplace(oldtags, "#GSO", "#OGS")
+  }
+oldtags := StrReplace(oldtags, "#EP", "")
+oldtags := StrReplace(oldtags, "#AM", "")
+oldtags := StrReplace(oldtags, "#AP", "")
+oldtags := RegExReplace(oldtags, "#SEO[1-9]*", "")
+oldtags := StrReplace(oldtags, "#COMP", "")
+
+
+/*
+#OPT1#A30D#OPT1#A30D#SEO1#EP
+
+if ((apbool)
+    && (InStr(oldtags, "#EP")
+        || InStr(oldtags, "#AM")
+        || InStr(oldtags, "#AP"))){
+      oldtags := StrReplace(oldtags, "#EP", "")
+      oldtags := StrReplace(oldtags, "#AM", "")
+      oldtags := StrReplace(oldtags, "#AP", "")
+    }
+if ((epbool)
+    && (InStr(oldtags, "#EP")
+        || InStr(oldtags, "#AM")
+        || InStr(oldtags, "#AP"))){
+      oldtags := StrReplace(oldtags, "#EP", "")
+      oldtags := StrReplace(oldtags, "#AM", "")
+      oldtags := StrReplace(oldtags, "#AP", "")
+    }
+if ((ambool)
+    && (InStr(oldtags, "#EP")
+        || InStr(oldtags, "#AM")
+        || InStr(oldtags, "#AP"))){
+      oldtags := StrReplace(oldtags, "#EP", "")
+      oldtags := StrReplace(oldtags, "#AM", "")
+      oldtags := StrReplace(oldtags, "#AP", "")
+    }
+if (gsobool
+    && InStr(oldtags, "#GSO")){
+      oldtags := StrReplace(oldtags, "#GSO", "")
+    }
+if (compbool 
+    && InStr(oldtags, "#COMP")){
+      oldtags := StrReplace(oldtags, "#COMP", "")
+    }
+if (serpbool  
+    && InStr(oldtags, "#SEO")){
+      oldtags := RegExReplace(oldtags, "#SEO[1-9]*", "")
+    }
+
+
+#GSO#COMP#OPT1#A30D#GSO#COMP#OPT1#A30D#SEO1#EP
+#GSO#COMP#OPT1#A30D#GSO#COMP#OPT1#A30D#SEO1#EP
+#GSO#COMP#OPT1#A30D#GSO#COMP#OPT1#A30D#SEO1#EP
+
+
+
+*/
+;remove the tags from the old, then add the new on the end
+;ReplacedStr := StrReplace(Haystack, Needle , ReplaceText, OutputVarCount, Limit)
     ;tagging
+  tagstring = %oldtags%%tagstring%
+
       if (serpbool) {
       tagstring = %tagstring%%serptag%
       }
@@ -551,15 +622,9 @@ Gui, Submit, NoHide
         tagstring = %tagstring%%amtag%
       }
 
-;add some logic to fix the old string and paste it to new string
-;remove the tags from the old, then add the new on the end
-;ReplacedStr := StrReplace(Haystack, Needle , ReplaceText, OutputVarCount, Limit)
-
-
 Gosub, TAGS
 return
-
-
+;#AP#GSO#COMP#OPT1#A30D#SEO1
 
 TAGS:
   Gui, Submit, NoHide
