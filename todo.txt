@@ -1,6 +1,11 @@
-0. add the "old tags" field and edit the tag string accordingly so it can be copy / paste rather than editng
+/need to test //0. add the "old tags" field and edit the tag string accordingly so it can be copy / paste rather than editng
 
-0.5 have opt script grab tags, current price, asin/upc
+//0.1 have opt script grab tags, current price, asin/upc
 
+0.2 have all guys send me their scripts, keep in separate files for updates
+
+0.3 add a slider gui to intake a value between 1.01 and 2.00 to adjust the time values for Sleep given a slowdown or speedup
+
+0.4 add a pop up gui on hotkey for key reference and with  a collapsable tutorial
 
 1. break out "universal" work scripts [ i.e. odat maneuvers and saved text snippets ] into its own ahk file

@@ -15,51 +15,99 @@ return
   return
 
 ;OPTIMIZATION HOTKEY
+;#TUTORIAL::
+;Loom link: 
+;   Press Ctrl + F in the document and search for "#CHANGE"
+;   At each change location perform the following steps in the code
+;   When the changed is made, write "done" on the same line so you can keep track of the parts that have been updated to your screen layout
+;       example: #CHANGE done
+;
+;   Please pay attention to any #NOTE tags for special instructions
+;
+;   ---LINES WITH #REF COORDS
+;   Navigate to the right-most part of the area of the odat page where the labeled data is 
+;     --example in loom
+;     click once to make sure that this point on the screen highlights the data that you want
+;   Without moving your mouse cursor, press Alt + Windows Key + z, then paste in below the line that says "#REF COORDS"
+;     these coords are for reference later 
+;   
+;   If there is a #REF COORDS tag under the #CHANGE tag, inspect the line starting with "MouseMove" below. 
+;     it should have an "x+[number]" section on that line
+;   to get [number], subtract the first number in the coordinate that is produced when you hit ctrl + win + z (x cooridinate)
+;     and subtract it from the first number that was produced at the #STARTING REF tag coordinates
+;   This is the [number] that you will put in x+[number]
+;   repeat this step for the #CHANGE tag sections that are marked with #REF COORDS
+;
+;   ---LINES WITHOUT #REF COORDS
+;   For the rest of the #CHANGE tags, simply hover to the point on your screen that is described in the note
+;     Also, make sure to reference the loom video for details on each cooridinate location
+;   Once to the point, press ctrl + win + z, the copy over the data that is bracketed in the below example
+;     Example data to replace: MouseMove, [1297, 125, 0] -- the bracketed data can be selected and replaced
+;
+;   Make sure to write "done" next to each #CHANGE tag, and you should be done setting up the movement of the script for your screen in no time
+;     just double check that the tags are all done, then test it out
+;
+;#running the script
+;Hover underneath the sku of the item you are optimizing    
+;Click to select the sku, when it is blue and selected you can run the script
+;The main script will run with ctrl + alt + A
+;   
 !^a::
  SendMode, Input
 clipboard := ""
 
-;start @ sku
+;#CHANGE
+;#SKU DATA
+;#STARTING REF
+;#REF COORDS
 ;289 484
-   MouseGetPos, startx, starty
-   Send ^c
-   ClipWait
-   sku := Trim(clipboard)
-   clipboard := ""
-/*
-;bin for tags in generator
-  MouseMove, startx+341, starty, 0
+  MouseGetPos, startx, starty
+  Send ^c
+  ClipWait
+  sku := Trim(clipboard)
+  clipboard := ""
+;#CHANGE
+; #NOTE-- FOR THE BIN ONLY, GO ABOUT IN THE MIDDLE OF THE INVISIBLE "BOX" THE BIN DATA IS IN, THEN CLICK CTRL + WIN + Z, NOT THE RIGHT-MOST POINT
+;#BIN DATA
+;#REF COORDS
+; 540, 470, 0
+  MouseMove, startx+125, starty, 0
   Sleep 200
   Click 2
   Sleep 350
   Send ^c
   ClipWait
   cliptags := Trim(clipboard)
-clipboard := ""
-*/
-;product id from asin field
-   ;630 ""
-   MouseMove, startx+341, starty, 0
-   Sleep 200
-   Click 2
-   Sleep 350
-   Send ^c
-   ClipWait
-   pid := Trim(clipboard)
-   clipboard := ""
-;mpn
-   ;878 ""
-   MouseMove, startx+589, starty, 0
-   Sleep 200
-   Click 2
-   Sleep 350
-   Send ^c
-   ClipWait
-   mpn := Trim(clipboard)
-   clipboard := ""
-   /*
-;price for current price in generator
+  clipboard := ""
+;#CHANGE
+;#PRODUCT ID DATA
+;#REF COORDS
+;1500, 692, 0
   MouseMove, startx+341, starty, 0
+  Sleep 200
+  Click 2
+  Sleep 350
+  Send ^c
+  ClipWait
+  pid := Trim(clipboard)
+   clipboard := ""
+;#CHANGE
+;#MPN DATA
+;#REF COORDS
+;1500, 692, 0
+  MouseMove, startx+589, starty, 0
+  Sleep 200
+  Click 2
+  Sleep 350
+  Send ^c
+  ClipWait
+  mpn := Trim(clipboard)
+  clipboard := ""*
+;#CHANGE
+;#PRICE DATA
+;#REF COORDS
+;2387, 471, 0
+  MouseMove, startx+805, starty, 0
   Sleep 200
   Click 2
   Sleep 350
@@ -67,8 +115,11 @@ clipboard := ""
   ClipWait
   clipprice := Trim(clipboard)
   clipboard := ""
-;upc/asin for generator
-  MouseMove, startx+341, starty, 0
+;#CHANGE
+;#UPC / ASIN DATA
+;#REF COORDS
+;2243, 644, 0
+  MouseMove, startx+884, starty, 0
    Sleep 200
    Click 2
    Sleep 350
@@ -76,9 +127,10 @@ clipboard := ""
    ClipWait
    clipasin := Trim(clipboard)
    clipboard := ""
-*/
 
-;shipstation
+;#CHANGE
+;#SHIPSTATION
+; #NOTE - NAVIGATE TO THE LEFT-MOST SIDE OF THE "ITEM NAME" FIELD IN THE LOWER SHIPSTATION WINDOW
    MouseMove, 1722, 710, 0
    Sleep 250
    Click 4
@@ -87,7 +139,9 @@ clipboard := ""
    Sleep 350
    Send {Enter}
 
-;processing logs
+;#CHANGE
+;#PROCESSING LOGS
+; #NOTE - NAVIGATE TO THE PROCESSING LOGS WINDOW, SCROLL TO THE TOP OF THE PAGE, AND HOVER OVER THE RIGHT-MOST SIDE OF THE SEARCH FIELD
    MouseMove, 2450, 401, 0
    Sleep 100
    Click
@@ -97,11 +151,15 @@ clipboard := ""
    Click 2
    Send %sku%
 
-;serp
+;#CHANGE
+;#SERP CHECKER BUTTON
+; #NOTE - NAVIGATE TO THE "SEO SERP | INSTANT RANK CHECKER" CHROME EXTENSION BUTTON, HOVER THERE
    MouseMove, 2401, 61, 0
    Sleep 250
    Click
-   ;search field
+;#CHANGE
+;#SERP SEARCH FIELD
+; #NOTE - NAVIGATE TO THE SEARCH FIELD IN SERP CHECKER ADD-ON, IN THE TOP LEFT CORNER, HOVER THERE 
    MouseMove, 1950, 168, 0
    Sleep 100
    Click 3
@@ -111,58 +169,69 @@ clipboard := ""
    Send {Enter}
    Sleep 150
 
-;google ads
-   ;products buttons space
+;#CHANGE
+;#GOOGLE ADS - PRODUCTS BUTTON AREA
+; #NOTE - NAVIGATE TO THE GOOGLE ADS WINDOW, SCROLL TO THE TOP, AND HOVER WHERE THERE IS A SMALL BLUE "PRODUCTS BUTTON", 
+;   OR A LARGER BLACK "PRODUCTS" LABEL
    MouseMove, 2739, 236, 0
    Sleep 100
    Click
    Sleep 100
    Send {Home}
    Sleep 400
-   ;filter
+;#CHANGE
+;#GOOGLE ADS - ADD FILTER BUTTON
+; #NOTE - HOVER OVER THE "ADD FILTER" BUTTON ON THE MAIN PRODUCTS SEARCH PAGE
    MouseMove, 2772, 522, 0
    Sleep 350
    Click
-   ;item id filter
+;#CHANGE
+;#GOOGLE ADS - RECENT FILTERS
+; #NOTE - HOVER OVER ONE OF THE RECENT FILTERS THAT CONTAINS AN ITEM ID
    MouseMove, 2845, 244, 0
    Sleep 300
    Click
    Sleep 350
-   ;blue item id
+;#CHANGE
+;#GOOGLE ADS - BLUE "ITEM ID CONTAINS" BUTTON
+; #NOTE - HOVER OVER THE EXISTING BLUE FILTER BUTTON
    MouseMove, 2807, 289, 0
    Sleep 250
    Click
    Sleep 200
    Click
    Sleep 450
-   ;filter search field
+;#CHANGE
+;#GOOGLE ADS - FILTER SEARCH FIELD
+; #NOTE - HOVER OVER THE SEARCH TERMS FIELD FOR ITEM ID FILTER
    MouseMove, 2789, 425, 0
    Sleep 300
    Click 3
    Sleep 450
    Send %pid%
    Sleep 300
-   ;click apply
+;#CHANGE
+;#GOOGLE ADS - BLUE APPLY BUTTON
+; #NOTE - HOVER OVER THE BLUE APPLY BUTTON IN THE ITEM ID FILTER
    MouseMove, 2898, 508, 0
    Sleep 350
    Click
 
-;select page safely
-;256 462
-;447 604
+;#CHANGE
+;#ODAT SELECTION
+; #NOTE - NAVIGATE BACK TO THE ODAT WINDOW, AND HOVER OF THE INACTIVE BAR OF GRAY TO THE LEFT OF YOUR TEST ITEM
    MouseMove, 1297, 125, 0
    Sleep 150
    Click
-   MouseMove, startx+191, starty+142, 0
-   clipboard := Trim(sku)
 
+;***DO NOT EDIT BELOW THIS LINE***
 ;toggle comment below for lone gui testing
-return
-
+;return
+;******************************************
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
 
 ;toggle comment below for lone gui testing 
-!+2::
+;!+2::
 ;GUI****************
 clipasin := "testasinb"
 cliptags := "[RTI-999] B199-1 #AP#GSO#EP#COMP#OPT1#SEO99#A30D"
