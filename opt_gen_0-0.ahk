@@ -147,9 +147,6 @@ Gui, Add, Button, x85 y60 w150 vmpnGui gMPNGUI, %mpn%
 Gui, Add, Text,x5 y95, PRODUCT_ID
 Gui, Add, Button, x85 y95 w150 vpidGui gPIDGUI, %pid%
 
-
-
-
 ;ROW 2 - ODAT / serp
 Gui, Add, Text, x240 y5, ##ODAT
 Gui, Add, Text, x240 y25, Number In Stock
@@ -164,8 +161,6 @@ Gui, Add, Edit, x240 y125 vcurrPrice gCURR_PRICE
 Gui, Add, Text, x240 y150, ##SERP
 Gui, Add, Text, x240 y165, Serp Ranking
 Gui, Add, Edit, x240 y180 vserp gSERP
-
-;Gui, Add, Button, x20 y140 w200 h60 Default gGENERATE, GENERATE
 
 ;ROW3 - amazon
 Gui, Add, Text, x365 y5, ##AMAZON
@@ -307,14 +302,13 @@ return
 GENERATE:
 Gui, Submit, NoHide
 ;new stuff for generation
+
     ;price types      
-
-
-
     amaSetPrice := asinLow
     ebaySetPrice := ebayTarget
     floorPrice := 11.99
     priceSuggestion := floorPrice
+
     ;bools for tags and states
     epbool := 0
     gsobool := 0
@@ -324,6 +318,7 @@ Gui, Submit, NoHide
     asinbool := 0
     serpbool := 0
     loneasinbool := 0
+
     ;tags
     aptag := "#AP"
     eptag := "#EP"
@@ -332,9 +327,11 @@ Gui, Submit, NoHide
     amtag := "#AM"
     serptag := "#SEO"
     tagstring := ""
+
     ;math vars
     marketCutFactor := .15
     regAssumeShip := 4
+    
     ;amaAssumeShip
         if (asinShip > 0
             && amaSetPrice){
