@@ -26,6 +26,17 @@ clipboard := ""
    ClipWait
    sku := Trim(clipboard)
    clipboard := ""
+/*
+;bin for tags in generator
+  MouseMove, startx+341, starty, 0
+  Sleep 200
+  Click 2
+  Sleep 350
+  Send ^c
+  ClipWait
+  cliptags := Trim(clipboard)
+clipboard := ""
+*/
 ;product id from asin field
    ;630 ""
    MouseMove, startx+341, starty, 0
@@ -46,7 +57,27 @@ clipboard := ""
    ClipWait
    mpn := Trim(clipboard)
    clipboard := ""
-   
+   /*
+;price for current price in generator
+  MouseMove, startx+341, starty, 0
+  Sleep 200
+  Click 2
+  Sleep 350
+  Send ^c
+  ClipWait
+  clipprice := Trim(clipboard)
+  clipboard := ""
+;upc/asin for generator
+  MouseMove, startx+341, starty, 0
+   Sleep 200
+   Click 2
+   Sleep 350
+   Send ^c
+   ClipWait
+   clipasin := Trim(clipboard)
+   clipboard := ""
+*/
+
 ;shipstation
    MouseMove, 1722, 710, 0
    Sleep 250
@@ -125,14 +156,18 @@ clipboard := ""
    MouseMove, startx+191, starty+142, 0
    clipboard := Trim(sku)
 
-;toggle below comment for lone gui testing
-;return
+;toggle comment below for lone gui testing
+return
 
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
 
-;toggle below comment for lone gui testing 
-;!+2::
+;toggle comment below for lone gui testing 
+!+2::
 ;GUI****************
+clipasin := "testasinb"
+cliptags := "[RTI-999] B199-1 #AP#GSO#EP#COMP#OPT1#SEO99#A30D"
+clipprice := 12.99
+
 
 Gui, New,,OPTIMIZATION GENERATOR
 
@@ -147,6 +182,11 @@ Gui, Add, Button, x85 y60 w150 vmpnGui gMPNGUI, %mpn%
 Gui, Add, Text,x5 y95, PRODUCT_ID
 Gui, Add, Button, x85 y95 w150 vpidGui gPIDGUI, %pid%
 
+Gui, Add, Text,x5 y130, OLD TAGS
+Gui, Add, Edit, x85 y130 w150 vcliptags gCLIP_TAGS Disabled, %cliptags%
+
+Gui, Add, Button, x5 y205 w230 h20 Default gGENERATE, GENERATE
+
 ;ROW 2 - ODAT / serp
 Gui, Add, Text, x240 y5, ##ODAT
 Gui, Add, Text, x240 y25, Number In Stock
@@ -156,7 +196,7 @@ Gui, Add, Text, x240 y65, Number Processed
 Gui, Add, Edit, x240 y80 vprocCount gPROC_COUNT
 
 Gui, Add, Text, x240 y105, Current Price
-Gui, Add, Edit, x240 y125 vcurrPrice gCURR_PRICE
+Gui, Add, Edit, x240 y125 w120 vcurrPrice gCURR_PRICE Disabled, %clipprice%
 
 Gui, Add, Text, x240 y150, ##SERP
 Gui, Add, Text, x240 y165, Serp Ranking
@@ -165,7 +205,7 @@ Gui, Add, Edit, x240 y180 vserp gSERP
 ;ROW3 - amazon
 Gui, Add, Text, x365 y5, ##AMAZON
 Gui, Add, Text, x365 y25, ASIN
-Gui, Add, Edit, x365 y40 vasin gASIN
+Gui, Add, Edit, x365 y40 w120 vasin gASIN, %clipasin%
 
 Gui, Add, Text, x365 y65, ASIN Ranking
 Gui, Add, Edit, x365 y80 vasinRanking gASIN_RANKING
@@ -198,7 +238,7 @@ Gui, Add, Edit, x490 y200 vgoogConversions gGOOG_CONVERSIONS
 Gui, Add, Text,x630 y5, ####################################
 Gui, Add, Text,x675 y+10, //////GENERATED DATA\\\\\\
 
-Gui, Add, Text, x630 y+20, TAGS 
+Gui, Add, Text, x630 y+20, NEW TAGS 
 Gui, Add, Edit, w200 vtags gTAGS Disabled
 Gui, Add, Button, x+10 w20 vtagCopy gTAG_COPY, COPY
 
@@ -209,7 +249,7 @@ Gui, Add, Button, x+10 w20 vpriceCopy gPRICE_COPY, COPY
 Gui, Add, Text, x630 y+20, ADD // NEVER
 Gui, Add, Edit, w50 vaddNever gADD_NEVER Disabled
 
-Gui, Add, Button, x20 y140 w200 h60 Default gGENERATE, GENERATE
+
 
 Gui, Show, x40 y60 w890 h230
 
@@ -223,6 +263,10 @@ return
 ;LABELS****************
 
   ;FIELDS**********************
+CLIP_TAGS:
+Gui, Submit, NoHide
+return
+
 ASIN_SELLERS:
 Gui, Submit, NoHide
 return
@@ -437,6 +481,11 @@ Gui, Submit, NoHide
       if (ambool){
         tagstring = %tagstring%%amtag%
       }
+
+;add some logic to fix the old string and paste it to new string
+;remove the tags from the old, then add the new on the end
+;ReplacedStr := StrReplace(Haystack, Needle , ReplaceText, OutputVarCount, Limit)
+
 
 Gosub, TAGS
 return
