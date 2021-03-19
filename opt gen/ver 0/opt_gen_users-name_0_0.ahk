@@ -51,16 +51,17 @@ return
 ;Hover underneath the sku of the item you are optimizing    
 ;Click to select the sku, when it is blue and selected you can run the script
 ;The main script will run with ctrl + alt + A
-;   
+;
 !^a::
  SendMode, Input
 clipboard := ""
 
-;#CHANGE
+;#CHANGE done
 ;#SKU DATA
 ;#STARTING REF
+;#NOTE - NO MouseMove to add coords to 
 ;#REF COORDS
-;289 484
+;297, 669, 0
   MouseGetPos, startx, starty
   Send ^c
   ClipWait
@@ -70,8 +71,8 @@ clipboard := ""
 ; #NOTE-- FOR THE BIN ONLY, GO ABOUT IN THE MIDDLE OF THE INVISIBLE "BOX" THE BIN DATA IS IN, THEN CLICK CTRL + WIN + Z, NOT THE RIGHT-MOST POINT
 ;#BIN DATA
 ;#REF COORDS
-; 540, 470, 0
-  MouseMove, startx+125, starty, 0
+; 402, 662, 0
+  MouseMove, startx+105, starty, 0
   Sleep 200
   Click 2
   Sleep 350
@@ -82,8 +83,9 @@ clipboard := ""
 ;#CHANGE
 ;#PRODUCT ID DATA
 ;#REF COORDS
-;1500, 692, 0
-  MouseMove, startx+341, starty, 0
+;586, 669, 0
+;-20
+  MouseMove, startx+269, starty, 0
   Sleep 200
   Click 2
   Sleep 350
@@ -94,8 +96,9 @@ clipboard := ""
 ;#CHANGE
 ;#MPN DATA
 ;#REF COORDS
-;1500, 692, 0
-  MouseMove, startx+589, starty, 0
+;873, 676, 0
+;-20
+  MouseMove, startx+556, starty, 0
   Sleep 200
   Click 2
   Sleep 350
@@ -106,8 +109,9 @@ clipboard := ""
 ;#CHANGE
 ;#PRICE DATA
 ;#REF COORDS
-;2387, 471, 0
-  MouseMove, startx+805, starty, 0
+;1109, 673, 0
+;-40
+  MouseMove, startx+772, starty, 0
   Sleep 200
   Click 2
   Sleep 350
@@ -118,8 +122,9 @@ clipboard := ""
 ;#CHANGE
 ;#UPC / ASIN DATA
 ;#REF COORDS
-;2243, 644, 0
-  MouseMove, startx+884, starty, 0
+;1188, 678, 0
+;-40
+  MouseMove, startx+851, starty, 0
    Sleep 200
    Click 2
    Sleep 350
@@ -153,7 +158,9 @@ clipboard := ""
 
 ;#CHANGE
 ;#SERP CHECKER BUTTON
-; #NOTE - NAVIGATE TO THE "SEO SERP | INSTANT RANK CHECKER" CHROME EXTENSION BUTTON, HOVER THERE
+; #NOTE - NAVIGATE TO THE "SEO SERP | INSTANT RANK CHECKER" CHROME EXTENSION BUTTON
+;     **MAKE SURE THIS IS THE BUTTON IN THE PROCESSING LOGS WINDOW**
+;       HOVER THERE
    MouseMove, 2401, 61, 0
    Sleep 250
    Click
@@ -236,9 +243,9 @@ clipboard := ""
 ;GUI****************
 /*testing vars
 clipasin := "testasinb"
-clipprice := 12.99
 cliptags := "#AP#GSO#COMP#OPT1#SEO99#A30D"
 */
+clipprice := 11.99
 
 Gui, New,,OPTIMIZATION GENERATOR
 
@@ -319,6 +326,7 @@ Gui, Add, Button, x+10 w20 vpriceCopy gPRICE_COPY, COPY
 
 Gui, Add, Text, x630 y+20, ADD // NEVER
 Gui, Add, Edit, w50 vaddNever gADD_NEVER Disabled
+
 
 
 
@@ -433,6 +441,25 @@ Gui, Submit, NoHide
     asinbool := 0
     serpbool := 0
     loneasinbool := 0
+    tagswapcheck := 0
+
+    ;setting bools for evaluation
+    if (InStr(asin, "B")){
+      asinbool := 1
+    }
+    if (serp > 0){
+      serpbool := 1
+    }
+    if (qoh > 0 
+        && asinSellers = 1){
+      loneasinbool := 1
+    }
+
+    if (InStr(sku, "_NEW") 
+        && asinbool 
+        && !apbool) {
+      compbool:=1
+    }
 
     ;tags
     aptag := "#AP"
@@ -446,15 +473,15 @@ Gui, Submit, NoHide
     ;math vars
     marketCutFactor := .15
     regAssumeShip := 4
-    
+  
     ;amaAssumeShip
-        if (asinShip > 0
-            && amaSetPrice){
-          amaAssumeShip := asinShip + .01
-          amaSetPrice := amaSetPrice - .01
-        } else {
-          amaAssumeShip := 5
+    amaAssumeShip := 5
+        if (asinShip = 0 && asinbool){
+          amaSetPrice := asinLow - amaAssumeShip
+        } else if (asinShip > 0 && !loneasinbool){
+          amaSetPrice := asinLow - .01
         }
+
     asinLowRank := 40000
     asinMidRank := 25000
     asinHighRank := 10000
@@ -467,35 +494,20 @@ Gui, Submit, NoHide
     marketAvg := ((realAma + realEbay)/2)
     acceptDiff := marketAvg * .1
     cpc := (googCost / googConversions)
-    
-    ;setting bools for evaluation
-    if (InStr(asin, "B")){
-      asinbool := 1
-    }
-    if (serp > 0){
-      serpbool := 1
-      serptag = %serptag%%serp%
-    }
-    if (qoh > 0 
-        && asinSellers = 1){
-      loneasinbool := 1
-    }
-
-    if (InStr(sku, "_NEW") 
-        && asinbool 
-        && !apbool) {
-      compbool:=1
-    }
+     
 
  ;NEW PRICING RULES
     ;#AM
     if (asinbool 
         && marketDiff <= acceptDiff 
         && asinRanking > asinHighRank 
-        && amaSetPrice > realFloor){
+        && amaSetPrice > floorPrice){
       priceSuggestion := amaSetPrice
       ambool := 1
+      apbool := 0
+      epbool := 0
     } 
+    ;market exclusions / inclusions
     ;#EP
     else if ((asinbool  
             && asinRanking < asinLowRank
@@ -505,6 +517,8 @@ Gui, Submit, NoHide
               && asinRanking < asinHighRank)){
           priceSuggestion := amaSetPrice
           epbool := 1
+          apbool := 0
+          ambool := 0
         } 
     ;#AP
     else if (asinbool 
@@ -512,18 +526,34 @@ Gui, Submit, NoHide
         && marketDiff > acceptDiff){
       priceSuggestion := ebaySetPrice
       apbool := 1
+      epbool := 0
+      ambool := 0
     } 
     ;NO TAGS
     else if ((!asinbool && ebaySetPrice)){
       priceSuggestion := ebaySetPrice
     } 
     ;NO TAGS AND LOW PRICE
-    else if (!apbool
-            && !epbool
-            && !ambool
-            && ebaySetPrice < floorPrice) {
-      priceSuggestion := floorPrice
+    if (!apbool && !epbool && !ambool){
+      tagswapcheck := 1
     }
+
+    if (tagswapcheck && ebaySetPrice < floorPrice) {
+      priceSuggestion := floorPrice
+    } 
+    ;ensure market swapping
+    if (InStr(cliptags, "#EP") && tagswapcheck){
+      apbool := 1
+    }
+    if (InStr(cliptags, "#AP") && tagswapcheck){
+      epbool := 1
+    }
+    if (!InStr(cliptags, "#AP") && !InStr(cliptags, "#EP") && tagswapcheck){
+      ambool := 1
+    }
+    
+
+    ;B148-2#OGS#CK#BCO1#SEO46#AP#EP
 
   ;set gso tag after price has been determined
   if ((googConversions
@@ -534,9 +564,7 @@ Gui, Submit, NoHide
     gsobool:=1
   }
 
-
 ;add some logic to fix the old string and paste it to new string
-;ap, ep, gso, am, seo, comp
 oldtags := cliptags
   if (InStr(cliptags, "#GSO") && gsobool){
     oldtags := StrReplace(oldtags, "#GSO", "")
@@ -549,62 +577,11 @@ oldtags := StrReplace(oldtags, "#AP", "")
 oldtags := RegExReplace(oldtags, "#SEO[1-9]*", "")
 oldtags := StrReplace(oldtags, "#COMP", "")
 
-
-/*
-#OPT1#A30D#OPT1#A30D#SEO1#EP
-
-if ((apbool)
-    && (InStr(oldtags, "#EP")
-        || InStr(oldtags, "#AM")
-        || InStr(oldtags, "#AP"))){
-      oldtags := StrReplace(oldtags, "#EP", "")
-      oldtags := StrReplace(oldtags, "#AM", "")
-      oldtags := StrReplace(oldtags, "#AP", "")
-    }
-if ((epbool)
-    && (InStr(oldtags, "#EP")
-        || InStr(oldtags, "#AM")
-        || InStr(oldtags, "#AP"))){
-      oldtags := StrReplace(oldtags, "#EP", "")
-      oldtags := StrReplace(oldtags, "#AM", "")
-      oldtags := StrReplace(oldtags, "#AP", "")
-    }
-if ((ambool)
-    && (InStr(oldtags, "#EP")
-        || InStr(oldtags, "#AM")
-        || InStr(oldtags, "#AP"))){
-      oldtags := StrReplace(oldtags, "#EP", "")
-      oldtags := StrReplace(oldtags, "#AM", "")
-      oldtags := StrReplace(oldtags, "#AP", "")
-    }
-if (gsobool
-    && InStr(oldtags, "#GSO")){
-      oldtags := StrReplace(oldtags, "#GSO", "")
-    }
-if (compbool 
-    && InStr(oldtags, "#COMP")){
-      oldtags := StrReplace(oldtags, "#COMP", "")
-    }
-if (serpbool  
-    && InStr(oldtags, "#SEO")){
-      oldtags := RegExReplace(oldtags, "#SEO[1-9]*", "")
-    }
-
-
-#GSO#COMP#OPT1#A30D#GSO#COMP#OPT1#A30D#SEO1#EP
-#GSO#COMP#OPT1#A30D#GSO#COMP#OPT1#A30D#SEO1#EP
-#GSO#COMP#OPT1#A30D#GSO#COMP#OPT1#A30D#SEO1#EP
-
-
-
-*/
-;remove the tags from the old, then add the new on the end
-;ReplacedStr := StrReplace(Haystack, Needle , ReplaceText, OutputVarCount, Limit)
     ;tagging
   tagstring = %oldtags%%tagstring%
 
       if (serpbool) {
-      tagstring = %tagstring%%serptag%
+      tagstring = %tagstring%%serptag%%serp%
       }
       if (gsobool){
         tagstring = %tagstring%%gsotag%

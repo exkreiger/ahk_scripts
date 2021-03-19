@@ -4,8 +4,11 @@
 
 0.2 have all guys send me their scripts, keep in separate files for updates
 
-0.3 add a slider gui to intake a value between 1.01 and 2.00 to adjust the time values for Sleep given a slowdown or speedup
+#tutorial / setup gui
+#persist settings in file
+##settings saved: sleep factor (slider), coord positions (include pictures in setup? -- yes)
 
-0.4 add a pop up gui on hotkey for key reference and with  a collapsable tutorial
-
-1. break out "universal" work scripts [ i.e. odat maneuvers and saved text snippets ] into its own ahk file
+    0.3 add a slider gui to intake a value between 1.01 and 2.00 to adjust the time values for Sleep given a slowdown or speedup
+    0.5 add a pop up gui on hotkey for key reference and with a collapsable tutorial
+    0.55 create a gui for script setup, enter in speific cooridinate values in a box and hit enter, these all get saved as hard code
+            https://autohotkey.com/board/topic/74188-how-can-i-write-a-variable-in-a-txt-file/

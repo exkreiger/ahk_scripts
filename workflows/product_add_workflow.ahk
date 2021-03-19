@@ -1,5 +1,6 @@
 CoordMode, Mouse, Screen
 
+;MISC PROJECTS
 !^\::
   InputBox, rows, getting ur rows, How many rows to delete leading 0s?
   i := 0
@@ -42,6 +43,7 @@ return
   Send {Enter}
 return
 
+;SCRIPT SPECIFIC UTILITIES
 !z::
   Reload
   return
@@ -61,30 +63,7 @@ return
   ToolTip,X%X%`,Y%Y%
   return
 
-!x::
-  MouseMove, 1557, 127, 0
-  Sleep 100
-  Click 3
-  Sleep 100
-  Send {Home}
-  Sleep 150
-  MouseMove, 1515, 368, 0
-  Sleep 50
-  Click 3
-  return
 
-!v::
-;312 623
-;369 863
-  MouseGetPos, xx, yy
-  Click, right
-  Sleep 100
-  MouseMove, xx+57, yy+240, 0
-  Sleep 100
-  Click
-  Sleep 100
-  MouseMove, xx, yy, 0
-  return
 
 !^+z::
   Run "C:\Users\Dell\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\shipping_workflow.ahk"
@@ -95,34 +74,8 @@ return
   MsgBox, 0,, LIST OF CONTROLS`n********************`nPRODUCT ADD`nAlt+q = product add page 1, with battery cover`nAlt + Shift + q = page 1 product add, nbc`nShift + q = continue from page 2`nAlt + w = product add page 4`nShift + w = continue from page 4`nAlt + e = product add page 5 (finish)`n`nAlt + Shift + w = reset product add page`n`nAlt + Ctrl + q = drag and drop new photo`n*******************`nPHOTO EDITING`nAlt + Shift + a = select to edit newest saved image`nAlt + Shift + s = drag and drop edited photo (REPLACE HORIZONTAL)`nAlt + Shift + d = drag and drop edited photo (REPLACE VERTICAL)`n*******************`nOPTIMIZATION`nCtrl + Alt + a = run optimization script (note, must have windows placed correctly)`nAlt + v = select "COMPLETE"`nAlt + x = send cursor to odat search`nCtrl + Shift = move a tab forward`nCtrl + Shift + Tab = move a tab backward`n********************`nMISCELLANEOUS`nAlt + Win + z = display cooridinates`nAlt + z = reload hotkey`nAlt + 1 = open the 'LIST OF CONTROLS' message box`nWin + 1 = edit the script`nShift + Ctrl + Alt + z = swap between alternate script (must be set up correctly)
   return
 
-;CS TEXT
 
-!d::
-  SendInput `nYou can return the remote at any time to the following address:`n`nRCD`n951 Washington Blvd`nSTE 517`nRoseville, CA, 95678`n`nWe'll issue you a refund when it arrives, or when you can forward us the tracking number.
-  return
-
-!t::
-  FormatTime, today,, ShortDate
-  SendInput %today% RETURNED / REFUNDED
-  return
-
-!f::
-  SendInput, `n`nThank you for your recent purchase, and I'm sorry to hear about this issue with the remote.
-  return
-
-!j::
-  SendInput -Josh, Remote Control Depot
-  return
-
-!l::
-  SendInput -Josh, Lifetime Warranty Remotes
-  return
-
-!h::
-  SendInput Thank you for your business, and we hope you and your loved ones stay safe and healthy,
-  return
-
- 
+;PRODUCT ADD 
 !q::
   MouseMove, 1559, 617,0
   Click
@@ -256,6 +209,7 @@ return
   return
 
 
+/* ;; DEPRECATED, USING OPT GEN SCRIPT NOW -- POSTERITY
 ;OPTIMIZATION HOTKEY
 !^a::
  startTime := A_TickCount
@@ -394,3 +348,4 @@ if WinExist("Online Split Timer - Google Chrome")
    ;MsgBox, took %runTime% seconds  
  
 return
+*/
