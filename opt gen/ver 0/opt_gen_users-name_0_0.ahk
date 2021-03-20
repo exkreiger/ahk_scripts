@@ -54,6 +54,7 @@ return
 ;
 !^a::
  SendMode, Input
+ WinClose, OPTIMIZATION GENERATOR
 clipboard := ""
 
 ;#CHANGE done
@@ -244,8 +245,8 @@ clipboard := ""
 /*testing vars
 clipasin := "testasinb"
 cliptags := "#AP#GSO#COMP#OPT1#SEO99#A30D"
-*/
 clipprice := 11.99
+*/
 
 Gui, New,,OPTIMIZATION GENERATOR
 
@@ -425,7 +426,6 @@ return
 GENERATE:
 Gui, Submit, NoHide
 ;new stuff for generation
-
     ;price types      
     amaSetPrice := asinLow
     ebaySetPrice := ebayTarget
@@ -442,6 +442,7 @@ Gui, Submit, NoHide
     serpbool := 0
     loneasinbool := 0
     tagswapcheck := 0
+    norankcheck := 0
 
     ;setting bools for evaluation
     if (InStr(asin, "B")){
@@ -459,6 +460,9 @@ Gui, Submit, NoHide
         && asinbool 
         && !apbool) {
       compbool:=1
+    }
+    if (asin = 0){
+      norankcheck := 1
     }
 
     ;tags
@@ -511,6 +515,7 @@ Gui, Submit, NoHide
     ;#EP
     else if ((asinbool  
             && asinRanking < asinLowRank
+            && !norankcheck
             && realAma > realEbay
             && marketDiff > acceptDiff)
               || (loneasinbool
@@ -538,10 +543,10 @@ Gui, Submit, NoHide
       tagswapcheck := 1
     }
 
+    ;ensure market swapping
     if (tagswapcheck && ebaySetPrice < floorPrice) {
       priceSuggestion := floorPrice
     } 
-    ;ensure market swapping
     if (InStr(cliptags, "#EP") && tagswapcheck){
       apbool := 1
     }
@@ -551,9 +556,6 @@ Gui, Submit, NoHide
     if (!InStr(cliptags, "#AP") && !InStr(cliptags, "#EP") && tagswapcheck){
       ambool := 1
     }
-    
-
-    ;B148-2#OGS#CK#BCO1#SEO46#AP#EP
 
   ;set gso tag after price has been determined
   if ((googConversions
@@ -578,7 +580,7 @@ oldtags := RegExReplace(oldtags, "#SEO[1-9]*", "")
 oldtags := StrReplace(oldtags, "#COMP", "")
 
     ;tagging
-  tagstring = %oldtags%%tagstring%
+      tagstring = %oldtags%%tagstring%
 
       if (serpbool) {
       tagstring = %tagstring%%serptag%%serp%
