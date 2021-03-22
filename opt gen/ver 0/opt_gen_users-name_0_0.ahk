@@ -234,13 +234,17 @@ clipboard := ""
 
 
 ;***DO NOT EDIT BELOW THIS LINE***
+;***
 ;toggle comment below for lone gui testing
-;return
+return
+;***
 ;******************************************
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
 
+;***
 ;toggle comment below for lone gui testing 
-;!+1::
+!+1::
+;***
 ;GUI****************
 /*testing vars
 clipasin := "testasinb"
@@ -274,8 +278,9 @@ Gui, Add, Edit, x240 y40 vqoh gQOH
 Gui, Add, Text, x240 y65, Number Processed
 Gui, Add, Edit, x240 y80 vprocCount gPROC_COUNT
 
+;deleted Disabled from Edit field
 Gui, Add, Text, x240 y105, Current Price
-Gui, Add, Edit, x240 y125 w120 vcurrPrice gCURR_PRICE Disabled, %clipprice%
+Gui, Add, Edit, x240 y125 w120 vcurrPrice gCURR_PRICE, %clipprice%
 
 Gui, Add, Text, x240 y150, ##SERP
 Gui, Add, Text, x240 y165, Serp Ranking
@@ -441,8 +446,14 @@ Gui, Submit, NoHide
     asinbool := 0
     serpbool := 0
     loneasinbool := 0
-    tagswapcheck := 0
+    nosellercheck := 0
     norankcheck := 0
+   
+    ;old tag had exclusion, but logic didn't add a new tag
+    ;kind of a bandaid
+    tagswapcheck := 0
+   
+
 
     ;setting bools for evaluation
     if (InStr(asin, "B")){
@@ -455,13 +466,15 @@ Gui, Submit, NoHide
         && asinSellers = 1){
       loneasinbool := 1
     }
-
+    if (asinSellers = 0 && asinLow = 0){
+      nosellercheck := 1
+    }
     if (InStr(sku, "_NEW") 
         && asinbool 
         && !apbool) {
       compbool:=1
     }
-    if (asin = 0){
+    if (asinRanking = 0){
       norankcheck := 1
     }
 
@@ -478,12 +491,16 @@ Gui, Submit, NoHide
     marketCutFactor := .15
     regAssumeShip := 4
   
-    ;amaAssumeShip
+    ;checking and fixing the amazon price before comparison
     amaAssumeShip := 5
         if (asinShip = 0 && asinbool){
           amaSetPrice := asinLow - amaAssumeShip
-        } else if (asinShip > 0 && !loneasinbool){
+        }
+        if (asinShip > 0 && !loneasinbool){
           amaSetPrice := asinLow - .01
+        }
+        if (nosellercheck && asinbool){
+          amaSetPrice := ebayTarget + amaAssumeShip
         }
 
     asinLowRank := 40000
@@ -502,6 +519,7 @@ Gui, Submit, NoHide
 
  ;NEW PRICING RULES
     ;#AM
+    ;testing 
     if (asinbool 
         && marketDiff <= acceptDiff 
         && asinRanking > asinHighRank 
@@ -537,16 +555,16 @@ Gui, Submit, NoHide
     ;NO TAGS
     else if ((!asinbool && ebaySetPrice)){
       priceSuggestion := ebaySetPrice
-    } 
+    }
+
     ;NO TAGS AND LOW PRICE
     if (!apbool && !epbool && !ambool){
       tagswapcheck := 1
     }
-
-    ;ensure market swapping
     if (tagswapcheck && ebaySetPrice < floorPrice) {
       priceSuggestion := floorPrice
     } 
+    ;ensure market swapping
     if (InStr(cliptags, "#EP") && tagswapcheck){
       apbool := 1
     }
