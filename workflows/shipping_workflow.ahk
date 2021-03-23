@@ -81,10 +81,11 @@ return
   Click
   Sleep 750
   Click
-  Sleep 7000
-  Send !1
-  Sleep 100
-  Send !1
+  Sleep 8000
+  MouseMove, 1734, 180, 0 
+  Click
+  Click
+  Click
   return 
 
 !4::

@@ -10,8 +10,29 @@ NEED TO HANDLE WHEN THERE ARE NO SELLERS AND NO PRICE ON A LISTING (AMAZON)
 #tutorial / setup gui
 #persist settings in file
 ##settings saved: sleep factor (slider), coord positions (include pictures in setup? -- yes)
+[go by order, most important below - numbers are labels from here down]
 
-    0.3 add a slider gui to intake a value between 1.01 and 2.00 to adjust the time values for Sleep given a slowdown or speedup
-    0.5 add a pop up gui on hotkey for key reference and with a collapsable tutorial
+    0.25 add a basic popup with the important keys that runs on startup of the script or at [hotkey]
+        key for tutorial    
+        key for "setup" - 0.55
+        key for running script
+    
     0.55 create a gui for script setup, enter in speific cooridinate values in a box and hit enter, these all get saved as hard code
             https://autohotkey.com/board/topic/74188-how-can-i-write-a-variable-in-a-txt-file/
+                **idea!!!
+                    tooltip with field name click for coordinates
+                        verify y/n
+                        insert into field on file (fileappend)
+                        if start point, save in start_no_paste
+                        minus point 2 from 
+
+    0.3 add a slider gui to intake a value between 1.01 and 2.00 to adjust the time values for Sleep given a slowdown or speedup
+
+    0.5 add a pop up gui on hotkey for key reference and with a collapsable tutorial [integrate with 0.25]
+    
+
+    *************************
+    starting videos
+        redo shipstation, processing and google ads screen for training
+        make an example video for when odat mis-behaves and how to go about handling that
+

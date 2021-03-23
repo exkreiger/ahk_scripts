@@ -236,14 +236,14 @@ clipboard := ""
 ;***DO NOT EDIT BELOW THIS LINE***
 ;***
 ;toggle comment below for lone gui testing
-return
+;return
 ;***
 ;******************************************
 ;*****GUI FOR OPTIMIZATION DATA GENERATOR
 
 ;***
 ;toggle comment below for lone gui testing 
-!+1::
+;!+1::
 ;***
 ;GUI****************
 /*testing vars
@@ -521,6 +521,10 @@ Gui, Submit, NoHide
     ;#AM
     ;testing 
     if (asinbool 
+        && ){
+
+    }
+    else if (asinbool 
         && marketDiff <= acceptDiff 
         && asinRanking > asinHighRank 
         && amaSetPrice > floorPrice){
